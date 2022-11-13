@@ -1,25 +1,27 @@
-package web.fruit.Controllers;
+package web.fruit.Controllers.old;
 
 import web.fruit.service.FruitService;
+import web.fruit.service.impl.FruitServiceImpl;
+import web.fruit.DAO.FruitDAO;
+import web.fruit.DAO.impl.FruitDAOImpl;
 import web.fruit.Pojo.Fruit;
 import web.myssm.uitl.StringUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-
 import java.util.List;
 
 
 //@WebServlet("/fruit.do")
 //不再是Servlet组件
-public class FruitController{
+public class FruitControllerForIoc {
 
-    //ioc-1
-    private FruitService fruitService = null;
+    private FruitService fruitService = new FruitServiceImpl();
 
+    private FruitDAO fruitDAO = new FruitDAOImpl();
 
-    public FruitController(){
+    public FruitControllerForIoc(){
 
     }
 

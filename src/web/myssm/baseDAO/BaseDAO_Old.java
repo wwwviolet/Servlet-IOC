@@ -8,8 +8,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public abstract class BaseDAO<T> {
+public abstract class BaseDAO_Old<T> {
 
+    public final String DRIVER = "com.mysql.cj.jdbc.Driver";
+    public final String URL = "jdbc:mysql://localhost:3306/cat_db2?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf8&useSSL=false&rewriteBatchedStatements=true";
+    public final String USER = "root";
+    public final String PWD = "000000" ;
 
     protected Connection conn ;
     protected PreparedStatement psmt ;
@@ -18,7 +22,7 @@ public abstract class BaseDAO<T> {
     //T的Class对象
     private Class entityClass ;
 
-    public BaseDAO(){
+    public BaseDAO_Old(){
         //getClass() 获取Class对象，当前我们执行的是new FruitDAOImpl() , 创建的是FruitDAOImpl的实例
         //那么子类构造方法内部首先会调用父类（BaseDAO）的无参构造方法
         //因此此处的getClass()会被执行，但是getClass获取的是FruitDAOImpl的Class
@@ -36,7 +40,16 @@ public abstract class BaseDAO<T> {
     }
 
     protected Connection getConn(){
-        return ConnUtil.getCon();
+        try {
+            //1.加载驱动
+            Class.forName(DRIVER);
+            //2.通过驱动管理器获取连接对象
+            return DriverManager.getConnection(URL, USER, PWD);
+        } catch (ClassNotFoundException | SQLException e) {
+            e.printStackTrace();
+        }
+        return null ;
+
     }
 
     protected void close(ResultSet rs , PreparedStatement psmt , Connection conn){

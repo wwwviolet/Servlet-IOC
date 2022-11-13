@@ -1,16 +1,14 @@
-package web.biz.impl;
+package web.fruit.service.impl;
 
-import com.sun.xml.internal.ws.api.ha.StickyFeature;
-import web.biz.FruitService;
+import web.fruit.service.FruitService;
 import web.fruit.DAO.FruitDAO;
-import web.fruit.DAO.impl.FruitDAOImpl;
 import web.fruit.Pojo.Fruit;
 
 import java.util.List;
 
 public class FruitServiceImpl implements FruitService {
 
-    private FruitDAO fruitDAO =  new FruitDAOImpl();
+    private FruitDAO fruitDAO = null;
 
     @Override
     public List<Fruit> getFruitList(String keyword, Integer pageNo) {
@@ -23,7 +21,7 @@ public class FruitServiceImpl implements FruitService {
     }
 
     @Override
-    public Fruit getFruitById(Integer fid) {
+    public Fruit getFruitByFid(Integer fid) {
         return fruitDAO.getFruitByFid(fid);
     }
 
@@ -37,5 +35,10 @@ public class FruitServiceImpl implements FruitService {
         int fruitCount = fruitDAO.getFruitCount(keyword);
         return (fruitCount + 5 - 1) / 5;
 
+    }
+
+    @Override
+    public void updateFruit(Fruit fruit) {
+        fruitDAO.update(fruit);
     }
 }

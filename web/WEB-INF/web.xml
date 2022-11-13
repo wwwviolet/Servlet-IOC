@@ -4,23 +4,23 @@
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
          version="4.0">
 
-    <context-param>
-        <param-name>contextConfigLocation</param-name>
-        <param-value>Classpath:applicationContext.xml</param-value>
-    </context-param>
-    
-    <servlet>
-        <servlet-name>Demo01Servlet</servlet-name>
-        <servlet-class>web.Demo01Servlet</servlet-class>
-        <init-param>
-            <param-name>hello</param-name>
-            <param-value>word</param-value>
-        </init-param>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>Demo01Servlet</servlet-name>
-        <url-pattern>/demo01</url-pattern>
-    </servlet-mapping>
+<!--    <context-param>-->
+<!--        <param-name>contextConfigLocation</param-name>-->
+<!--        <param-value>Classpath:applicationContext.xml</param-value>-->
+<!--    </context-param>-->
+<!--    -->
+<!--    <servlet>-->
+<!--        <servlet-name>Demo01Servlet</servlet-name>-->
+<!--        <servlet-class>web.Demo01Servlet</servlet-class>-->
+<!--        <init-param>-->
+<!--            <param-name>hello</param-name>-->
+<!--            <param-value>word</param-value>-->
+<!--        </init-param>-->
+<!--    </servlet>-->
+<!--    <servlet-mapping>-->
+<!--        <servlet-name>Demo01Servlet</servlet-name>-->
+<!--        <url-pattern>/demo01</url-pattern>-->
+<!--    </servlet-mapping>-->
 
 
     <context-param>
@@ -46,4 +46,14 @@
         <servlet-name>default</servlet-name>
         <url-pattern>*.jpg</url-pattern>
     </servlet-mapping>
+
+
+<!--    <filter>-->
+<!--        <filter-name>demo01filter</filter-name>-->
+<!--        <filter-class>web.filters.Demo01Filter</filter-class>-->
+<!--    </filter>-->
+<!--    <filter-mapping>-->
+<!--        <filter-name>demo01filter</filter-name>-->
+<!--        <url-pattern>/demo01.action</url-pattern>-->
+<!--    </filter-mapping>-->
 </web-app>

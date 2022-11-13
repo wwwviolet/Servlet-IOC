@@ -1,17 +1,15 @@
-package web.myssm.mySpringMVC;
+package web.myssm.mySpringMVC.old;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-import web.myssm.io.BeanFactory;
-import web.myssm.io.ClassPathXmlApplicationContext;
+import web.myssm.mySpringMVC.ViewBaseServlet;
 import web.myssm.uitl.StringUtil;
 
-import javax.servlet.*;
+import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.DocumentBuilder;
@@ -19,7 +17,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -27,14 +24,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-@WebServlet("*.do")//通配符,表示拦截所有.do结尾的请求,无需加斜杠
-public class dispatcherServlet extends ViewBaseServlet {
-
-    //IOC
-    private BeanFactory beanFactory;
+//@WebServlet("*.do")//通配符,表示拦截所有.do结尾的请求,无需加斜杠
+public class dispatcherServletForIoc extends ViewBaseServlet {
 
 
-    //private Map<String, Object> beanMap = new HashMap<>();
+    private Map<String, Object> beanMap = new HashMap<>();
 
     //Servlet的生命周期分为实例化,初始化,服务,销毁四个生命周期
     //在构造方法中解析xml文件,把配置文件中的所有bean标签,和实例对象全部加载保存在Map对象中
@@ -86,7 +80,7 @@ public class dispatcherServlet extends ViewBaseServlet {
     }
      */
 
-    public dispatcherServlet() {
+    public dispatcherServletForIoc() {
 
     }
 
@@ -96,9 +90,53 @@ public class dispatcherServlet extends ViewBaseServlet {
         //调用父类的ViewBaseServlet的init()方法
         super.init();
 //        System.out.println("inti-config被调用");
-        //IOC
-        beanFactory = new ClassPathXmlApplicationContext();
+        try {
+            //得到一个输入流
+            InputStream resourceAsStream = getClass().getClassLoader().getResourceAsStream("applicationContext.xml");
+            //1.创建DocumentBuilderFactory
+            DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+            //2.创建DocumentBuilder对象
+            DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
+            //3.创建Document对象
+            Document document = documentBuilder.parse(resourceAsStream);
 
+            //4.获取所有的bean元素(节点)
+            NodeList beanNodeList = document.getElementsByTagName("bean");
+
+            for (int i = 0; i < beanNodeList.getLength(); i++) {
+                Node beanNode = beanNodeList.item(i);
+                if (beanNode.getNodeType() == Node.ELEMENT_NODE) {
+                    Element beanElement = (Element) beanNode;
+                    String beanId = beanElement.getAttribute("id");
+                    String className = beanElement.getAttribute("class");
+                    Class<?> controllerBeanClass = Class.forName(className);
+                    Object beanObj = controllerBeanClass.newInstance();
+                    /*
+                    Method setServletContext = controllerBeanClass.getDeclaredMethod("setServletContext", ServletContext.class);
+                    setServletContext.invoke(beanObj, this.getServletContext());
+                     */
+                    /*
+                    Field servletContextField = controllerBeanClass.getDeclaredField("servletContext");
+                    servletContextField.setAccessible(true);
+                    servletContextField.set(beanObj,this.getServletContext());
+                    beanMap.put(beanId, beanObj);
+                     */
+                    beanMap.put(beanId, beanObj);
+                }
+            }
+        } catch (ParserConfigurationException e) {
+            e.printStackTrace();
+        } catch (IOException ioException) {
+            ioException.printStackTrace();
+        } catch (SAXException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -106,9 +144,7 @@ public class dispatcherServlet extends ViewBaseServlet {
 //        System.out.println("到这里");
         //设置编码
         //对发过来的请求进行utf-8编码
-
-        //2022/11/13 filter 在过滤器中进行设置编码,此段注销
-        //request.setCharacterEncoding("UTF-8");
+        request.setCharacterEncoding("UTF-8");
 
 
         //1.来自哪个controller
@@ -123,9 +159,7 @@ public class dispatcherServlet extends ViewBaseServlet {
         int lastIndexOf = servletPath.lastIndexOf(".do");
         servletPath = servletPath.substring(0, lastIndexOf);
         //System.out.println(servletPath);
-        //通过BeanFactory的接口获取bean
-        //IOC
-        Object controllerBeanObj = beanFactory.getBean(servletPath);
+        Object controllerBeanObj = beanMap.get(servletPath);
 
         //2.获取xx.do通过request请求进来的value,准备调用Controller里的方法
         String operateWeb = request.getParameter("operateWeb");
